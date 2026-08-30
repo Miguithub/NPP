@@ -18,4 +18,14 @@ El notebook principal estudia la cuota probabilística futura de Bitcoin dentro 
 
 Archivo: `Primer_acercamiento_modelo_un_solo_agente.ipynb`.
 
+## Modelo GAT multivariado
+
+La rama `codex/modelo-gat` incorpora el primer modelo conjunto del simplex completo. Cada criptoactivo es un nodo y el GAT predice simultáneamente la redistribución de las cuotas a un horizonte de diez minutos, con cortes cronológicos, purga, escalado exclusivo de train, grafo CLR causal y `shuffle=False`.
+
+Archivos principales:
+
+- `Modelo_GAT_NPP.ipynb`: notebook ejecutado y auditable;
+- `modelo_gat_npp.py`: fuente sincronizada y reproducible;
+- `NOTA_CIENTIFICA_CABEZA_ENERGETICA_VS_GAT_NPP.md`: distinción formal y empírica entre la cabeza predictiva regularizada y la solución energética estricta.
+
 Este repositorio contiene investigación exploratoria y no constituye asesoramiento financiero.
