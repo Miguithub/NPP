@@ -66,7 +66,9 @@ class Config:
     dftu_path: str = "/content/drive/MyDrive/0626dftu.parquet"
     price_path: str = "/content/drive/MyDrive/0626p.parquet"
     volume_path: str = "/content/drive/MyDrive/0626v.parquet"
-    results_dir: str = "/content/drive/MyDrive/Neural/NPP/Cripto/GAT_crypto_results"
+    results_dir: str = os.environ.get(
+        "GAT_RESULTS_DIR", "/content/drive/MyDrive/Neural/NPP/Cripto/GAT_crypto_results"
+    )
     cache_dir: str = "/content/gat_crypto_cache"
 
     start_timestamp: str = "2026-01-01 00:00:00+00:00"
@@ -101,7 +103,7 @@ class Config:
     lambda_energy_smooth: float = 1e-4
 
     eps: float = 1e-12
-    seed: int = 42
+    seed: int = int(os.environ.get("GAT_SEED", "42"))
     rebuild_features: bool = True
 
 
@@ -852,8 +854,10 @@ def validation_ce(model: nn.Module, loader: DataLoader) -> float:
     return total / count
 
 
-def train_model(name: str, use_npp: bool) -> Tuple[CryptoGAT, pd.DataFrame]:
-    set_seed(CFG.seed)
+def train_model(
+    name: str, use_npp: bool, seed: Optional[int] = None
+) -> Tuple[CryptoGAT, pd.DataFrame]:
+    set_seed(CFG.seed if seed is None else seed)
     model = CryptoGAT(len(FEATURE_NAMES), CFG).to(DEVICE)
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay
@@ -1187,4 +1191,3 @@ scientific_summary = scientific_run_summary()
     json.dumps(scientific_summary, indent=2, ensure_ascii=False), encoding="utf-8"
 )
 print(json.dumps(scientific_summary, indent=2, ensure_ascii=False))
-
