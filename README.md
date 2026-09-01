@@ -51,3 +51,34 @@ Archivos:
 - `resultados/contraste_3_semillas/metricas_globales_por_semilla.csv`;
 - `resultados/contraste_3_semillas/contraste_emparejado_resumen.csv`;
 - `resultados/contraste_3_semillas/resumen_por_modelo.csv`.
+
+## Ablación NPP de diez semillas
+
+La rama `codex/ablacion-10-semillas` reemplaza el control ambiguo del experimento inicial por tres GAT identificables:
+
+- GAT 100% libre: grafo exclusivamente CLR y loss predictiva;
+- GAT NPP solo aristas: grafo híbrido con 25% de proximidad energética, sin regularización NPP;
+- GAT + NPP: grafo híbrido y regularización NPP completa.
+
+Los modelos se evaluaron con diez semillas emparejadas sobre el mismo test cronológico de 2.016 observaciones. Los tres GAT superaron a persistencia en CE, KL, JS, MAE y RMSE en las diez semillas.
+
+Conclusiones principales:
+
+- NPP solo en las aristas superó al GAT 100% libre en CE, KL, JS y MAE en 10/10 semillas;
+- GAT + NPP superó al libre en CE, KL y JS en 10/10, y en MAE en 9/10;
+- GAT + NPP obtuvo las mejores medias de CE, KL y RMSE;
+- NPP solo aristas obtuvo las mejores medias de JS y MAE;
+- la mejora NPP frente al GAT libre es pequeña pero consistente;
+- persistencia conserva una ventaja amplia en Aitchison, incluso al restringir el cálculo a nodos activos.
+
+La evidencia atribuye el canal más estable del NPP a la topología energética. La regularización adicional mejora CE/KL, pero no domina todas las métricas. Las semillas miden estabilidad de optimización, no robustez temporal.
+
+Las veinte variables utilizadas son una operacionalización inicial y relativamente rústica, derivada principalmente de OHLCV y de las cuotas del simplex. Esto vuelve al método reproducible y transferible a otros activos digitales, pero todavía no incorpora microestructura de mercado, order book, costos efectivos, volatilidad condicional avanzada ni medidas directas de resistencia sistémica. La mejora observada debe interpretarse como evidencia favorable para esta representación mínima, no como techo predictivo del NPP.
+
+Archivos:
+
+- `GAT_crypto_contraste_experimental.ipynb`;
+- `NOTA_CIENTIFICA_ABLACION_10_SEMILLAS.md`;
+- `resultados/ablacion_10_semillas/metricas_globales_por_semilla.csv`;
+- `resultados/ablacion_10_semillas/contraste_emparejado_resumen.csv`;
+- `resultados/ablacion_10_semillas/resumen_por_modelo.csv`.
