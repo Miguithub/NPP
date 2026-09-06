@@ -22,7 +22,7 @@ BTC_y(t) \rightarrow P\!\left(Z^{vol}_{t+h}=k\right).
 
 La hipótesis central es que `BTC_y` funciona mejor como **descriptor de estado o variable de gating** que como regresor directo de precio, retorno o volatilidad puntual.
 
-## 3. Evidencia obtenida en el chat original
+## 3. Evidencia obtenida
 
 El análisis previo encontró:
 
