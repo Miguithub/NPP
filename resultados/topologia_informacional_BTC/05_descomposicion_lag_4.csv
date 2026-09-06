@@ -1,0 +1,8 @@
+experiment,model,feature_set,target,sample,n,mutual_information,auc_orientation_free,feature,pearson,spearman,threshold_fitted_on_train,levene_statistic,levene_pvalue,minimum_group_std,maximum_group_std,std_ratio_max_min,mi_raw_return,mi_volatility_standardized_return
+F1_direction,dependency_lag_decomposition,dBTC_y_lag_4,return_direction,development_train,18248,0.0,0.5001606006771644,,,,,,,,,,,
+F2_magnitude,nonparametric_dependency,dBTC_y_lag_4,abs_return,development_train,18248,0.0077051608462488375,,dBTC_y_lag_4,0.0019840626383511896,0.010099800607979983,,,,,,,,
+F3_tails,dependency_lag_decomposition,dBTC_y_lag_4,abs_return_top_10pct,development_train,18248,0.0,,,,,0.003113436745479703,,,,,,,
+F3_tails,dependency_lag_decomposition,dBTC_y_lag_4,abs_return_top_5pct,development_train,18248,0.0029524207524045387,,,,,0.004422696772962809,,,,,,,
+F3_tails,dependency_lag_decomposition,dBTC_y_lag_4,abs_return_top_2.5pct,development_train,18248,0.0009685187865093869,,,,,0.005877281539142132,,,,,,,
+F3_tails,dependency_lag_decomposition,dBTC_y_lag_4,abs_return_top_1pct,development_train,18248,0.00046592242274989815,,,,,0.00828017108142376,,,,,,,
+F4_conditional_variance,levene_deciles,dBTC_y_lag_4,return_variance,development_train,18248,,,,,,,2.79014148018479,0.0028637928749735025,0.0019177646609023213,0.002485916018486023,1.2962570794877315,0.013841190492398958,0.0008539291857827536

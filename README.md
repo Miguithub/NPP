@@ -82,3 +82,27 @@ Archivos:
 - `resultados/ablacion_10_semillas/metricas_globales_por_semilla.csv`;
 - `resultados/ablacion_10_semillas/contraste_emparejado_resumen.csv`;
 - `resultados/ablacion_10_semillas/resumen_por_modelo.csv`.
+
+## Topología informacional de `BTC_y` y regímenes de volatilidad
+
+El script `analisis_topologia_informacional_btc.py` convierte en un pipeline reproducible el análisis exploratorio de la coordenada `BTC_y` del simplex. Recorre asociaciones lineales y no lineales, lags, heterocedasticidad, volatilidad futura, regresión y clasificación de tres y cinco regímenes.
+
+La hipótesis que se contrasta es que `BTC_y` tiene mayor utilidad como descriptor de régimen o *gate* probabilístico que como predictor directo de precio o retorno. Para identificar su aporte sin confundirlo con la capacidad del algoritmo, el pipeline compara modelos anidados de la misma arquitectura:
+
+- volatilidad observable sin variables topológicas;
+- topología `BTC_y` sin volatilidad;
+- volatilidad más topología;
+- dummy, árbol interpretable y boosting multiescala.
+
+El 30% final permanece como holdout cronológico, se purga el borde según el horizonte, el walk-forward usa ventana expansiva con `gap`, los cuantiles se ajustan sólo en train y no existe shuffle. Todos los CSV identifican explícitamente el experimento, el modelo, la familia de features y el split.
+
+El notebook también genera `prompts_tecnicos_por_modelo.md`: una ficha-prompt por cada benchmark, regresión, árbol y boosting. Cada prompt documenta arquitectura, optimización, contexto y métricas separadas de train, validación walk-forward y holdout, incluidas métricas por clase y matrices de confusión cuando corresponden.
+
+Archivos:
+
+- `analisis_topologia_informacional_btc.py`;
+- `Importancia_topologia_informacional_BTC.ipynb`;
+- `NOTA_CIENTIFICA_TOPOLOGIA_INFORMACIONAL_BTC.md`;
+- `requirements_topologia_informacional.txt`.
+
+La operacionalización utiliza componentes NPP de primer orden, derivados de precio y de la cuota del simplex. Es deliberadamente accesible y transferible, pero todavía admite mejoras de representación mediante microestructura, volatilidad condicional y mediciones más directas de fricción y resistencia sistémica.

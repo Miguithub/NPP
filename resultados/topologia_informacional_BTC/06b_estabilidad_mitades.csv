@@ -1,0 +1,3 @@
+experiment,model,feature_set,feature,target,sample,n,pearson,spearman,mutual_information
+G_stability_halves,nonparametric_dependency,dBTC_y_lag_0,dBTC_y_lag_0,future_rms_h2,first_half,9124,0.0018801114384536402,0.00108485358062846,0.011434246713191598
+G_stability_halves,nonparametric_dependency,dBTC_y_lag_0,dBTC_y_lag_0,future_rms_h2,second_half,9126,0.01863427487062603,0.010614444998718012,0.010033154463935823

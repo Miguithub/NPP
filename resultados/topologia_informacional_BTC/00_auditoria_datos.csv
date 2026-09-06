@@ -1,0 +1,2 @@
+experiment,model,feature_set,rows_joined,missing_price,missing_BTC_y,nonpositive_price,BTC_y_outside_unit_interval,start,end,rows_model_frame,rows_train,rows_purged,rows_test,shuffle
+input_audit,none,price+BTC_y,26064,0,0,0,0,2026-01-01 00:00:00+00:00,2026-06-30 23:50:00+00:00,26025,18215,2,7808,False
