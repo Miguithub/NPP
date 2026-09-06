@@ -99,6 +99,7 @@ El 30% final permanece como holdout cronológico, se purga el borde según el ho
 Archivos:
 
 - `analisis_topologia_informacional_btc.py`;
+- `Importancia_topologia_informacional_BTC.ipynb`;
 - `NOTA_CIENTIFICA_TOPOLOGIA_INFORMACIONAL_BTC.md`;
 - `requirements_topologia_informacional.txt`.
 
