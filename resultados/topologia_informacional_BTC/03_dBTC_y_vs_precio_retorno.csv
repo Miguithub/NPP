@@ -1,0 +1,7 @@
+experiment,model,feature_set,feature,target,sample,n,pearson,spearman,mutual_information
+D_dBTC_y_relations,nonparametric_dependency,dBTC_y_lag_0,dBTC_y_lag_0,price_t,development_train,18252,-6.436623460300407e-05,-1.4736992330143335e-05,0.016548025052752102
+D_dBTC_y_relations,nonparametric_dependency,dBTC_y_lag_0,dBTC_y_lag_0,delta_price_t,development_train,18252,-0.0018618014456595602,-0.0024026158900164797,0.007206471845899287
+D_dBTC_y_relations,nonparametric_dependency,dBTC_y_lag_0,dBTC_y_lag_0,return_t,development_train,18252,-0.002947129352351218,-0.003238335182567277,0.01260979128825035
+D_dBTC_y_relations,nonparametric_dependency,dBTC_y_lag_1,dBTC_y_lag_1,price_t,development_train,18251,4.1560049183472536e-05,0.00019771751130749843,0.015500100381110826
+D_dBTC_y_relations,nonparametric_dependency,dBTC_y_lag_1,dBTC_y_lag_1,delta_price_t,development_train,18251,0.005231029030154718,0.0073924296061729875,0.0007715497190217135
+D_dBTC_y_relations,nonparametric_dependency,dBTC_y_lag_1,dBTC_y_lag_1,return_t,development_train,18251,0.005352117788462301,0.007787322944488282,0.0

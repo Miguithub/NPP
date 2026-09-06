@@ -1,0 +1,6 @@
+experiment,model,model_family,feature_set,split,n_train,n_eval,MAE,RMSE,R2
+H_regression_holdout,persistence,regression,sigma_past,holdout,18215,7808,0.0009060630773860051,0.0014114350434852574,-0.1776361507902986
+H_regression_holdout,linear_volatility,regression,sigma_past,holdout,18215,7808,0.0008197244048366671,0.001190681573387773,0.1619294062324933
+H_regression_holdout,linear_volatility_plus_topology,regression,sigma_past+dBTC_y,holdout,18215,7808,0.0008196263680725738,0.0011906024179135712,0.16204083093529376
+H_regression_holdout,histgb_volatility,regression,sigma_past,holdout,18215,7808,0.0008871646371882497,0.0012498996244816956,0.07649423217285756
+H_regression_holdout,histgb_volatility_plus_topology,regression,sigma_past+dBTC_y,holdout,18215,7808,0.0008873253421187873,0.001250390819612173,0.07576823680319578
