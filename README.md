@@ -96,6 +96,8 @@ La hipótesis que se contrasta es que `BTC_y` tiene mayor utilidad como descript
 
 El 30% final permanece como holdout cronológico, se purga el borde según el horizonte, el walk-forward usa ventana expansiva con `gap`, los cuantiles se ajustan sólo en train y no existe shuffle. Todos los CSV identifican explícitamente el experimento, el modelo, la familia de features y el split.
 
+El notebook también genera `prompts_tecnicos_por_modelo.md`: una ficha-prompt por cada benchmark, regresión, árbol y boosting. Cada prompt documenta arquitectura, optimización, contexto y métricas separadas de train, validación walk-forward y holdout, incluidas métricas por clase y matrices de confusión cuando corresponden.
+
 Archivos:
 
 - `analisis_topologia_informacional_btc.py`;

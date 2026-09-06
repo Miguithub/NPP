@@ -740,17 +740,30 @@ def run_regression_holdout(
     del frame
     y_train = train["sigma_future"].to_numpy()
     y_test = test["sigma_future"].to_numpy()
-    specs: list[tuple[str, str, np.ndarray]] = []
-    specs.append(("persistence", "sigma_past", test["sigma_past"].to_numpy()))
+    specs: list[tuple[str, str, np.ndarray, np.ndarray]] = []
+    specs.append(
+        (
+            "persistence",
+            "sigma_past",
+            train["sigma_past"].to_numpy(),
+            test["sigma_past"].to_numpy(),
+        )
+    )
     linear_base = LinearRegression().fit(train[["sigma_past"]], y_train)
     specs.append(
-        ("linear_volatility", "sigma_past", linear_base.predict(test[["sigma_past"]]))
+        (
+            "linear_volatility",
+            "sigma_past",
+            linear_base.predict(train[["sigma_past"]]),
+            linear_base.predict(test[["sigma_past"]]),
+        )
     )
     linear_plus = LinearRegression().fit(train[["sigma_past", "dBTC_y"]], y_train)
     specs.append(
         (
             "linear_volatility_plus_topology",
             "sigma_past+dBTC_y",
+            linear_plus.predict(train[["sigma_past", "dBTC_y"]]),
             linear_plus.predict(test[["sigma_past", "dBTC_y"]]),
         )
     )
@@ -762,7 +775,12 @@ def run_regression_holdout(
         random_state=cfg.seed,
     ).fit(train[["sigma_past"]], y_train)
     specs.append(
-        ("histgb_volatility", "sigma_past", hgb_base.predict(test[["sigma_past"]]))
+        (
+            "histgb_volatility",
+            "sigma_past",
+            hgb_base.predict(train[["sigma_past"]]),
+            hgb_base.predict(test[["sigma_past"]]),
+        )
     )
     hgb_plus = HistGradientBoostingRegressor(
         learning_rate=cfg.boosting_learning_rate,
@@ -775,17 +793,35 @@ def run_regression_holdout(
         (
             "histgb_volatility_plus_topology",
             "sigma_past+dBTC_y",
+            hgb_plus.predict(train[["sigma_past", "dBTC_y"]]),
             hgb_plus.predict(test[["sigma_past", "dBTC_y"]]),
         )
     )
-    return pd.DataFrame(
-        [
-            regression_metrics(
-                y_test, prediction, "H_regression_holdout", model, features, "holdout", len(train)
-            )
-            for model, features, prediction in specs
-        ]
-    )
+    rows = []
+    for model, features, train_prediction, test_prediction in specs:
+        rows.extend(
+            [
+                regression_metrics(
+                    y_train,
+                    train_prediction,
+                    "H_regression_holdout_train",
+                    model,
+                    features,
+                    "holdout_train",
+                    len(train),
+                ),
+                regression_metrics(
+                    y_test,
+                    test_prediction,
+                    "H_regression_holdout",
+                    model,
+                    features,
+                    "holdout",
+                    len(train),
+                ),
+            ]
+        )
+    return pd.DataFrame(rows)
 
 
 def run_regression_walk_forward(frame: pd.DataFrame, cfg: Config) -> pd.DataFrame:
@@ -796,8 +832,11 @@ def run_regression_walk_forward(frame: pd.DataFrame, cfg: Config) -> pd.DataFram
     for fold, (train_idx, validation_idx) in enumerate(splitter.split(frame), start=1):
         train, validation = frame.iloc[train_idx], frame.iloc[validation_idx]
         fold_metrics = run_regression_holdout(frame, train, validation, cfg)
-        fold_metrics["experiment"] = "H_regression_walk_forward"
-        fold_metrics["split"] = f"fold_{fold}"
+        is_train = fold_metrics["split"].eq("holdout_train")
+        fold_metrics["experiment"] = np.where(
+            is_train, "H_regression_walk_forward_train", "H_regression_walk_forward"
+        )
+        fold_metrics["split"] = np.where(is_train, f"fold_{fold}_train", f"fold_{fold}")
         fold_metrics["fold"] = fold
         rows.append(fold_metrics)
     return pd.concat(rows, ignore_index=True)
@@ -967,16 +1006,41 @@ def fit_classification_suite(
     cfg: Config,
     backend: str,
     collect_details: bool,
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> tuple[
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+]:
     thresholds = regime_thresholds(train["sigma_future"], scheme, cfg)
     y_train = assign_regime(train["sigma_future"], thresholds)
     y_eval = assign_regime(evaluation["sigma_future"], thresholds)
     n_classes = len(CLASS_NAMES[scheme])
-    metric_rows, class_rows, confusion_rows, importance_rows = [], [], [], []
+    metric_rows, train_metric_rows = [], []
+    class_rows, confusion_rows, importance_rows = [], [], []
 
     for model_name, feature_set, columns, factory in specs:
         model = factory()
         model.fit(train[columns], y_train)
+        train_probability = aligned_probabilities(
+            model, model.predict_proba(train[columns]), n_classes
+        )
+        train_metric_rows.append(
+            classification_metric_row(
+                y_train,
+                train_probability,
+                "I_J_regime_classification_train",
+                model_name,
+                feature_set,
+                f"{split}_train",
+                scheme,
+                backend if "advanced" in feature_set else "decision_tree_or_dummy",
+                len(train),
+                cfg.seed,
+            )
+        )
         raw_probability = model.predict_proba(evaluation[columns])
         probabilities = aligned_probabilities(model, raw_probability, n_classes)
         prediction = probabilities.argmax(axis=1)
@@ -1085,6 +1149,7 @@ def fit_classification_suite(
     ]
     return (
         pd.DataFrame(metric_rows),
+        pd.DataFrame(train_metric_rows),
         pd.DataFrame(class_rows),
         pd.DataFrame(confusion_rows),
         pd.DataFrame(importance_rows),
@@ -1100,7 +1165,7 @@ def classification_experiments(
     cfg: Config,
     backend: str,
 ) -> dict[str, pd.DataFrame]:
-    holdout_parts = [[], [], [], [], []]
+    holdout_parts = [[], [], [], [], [], []]
     for scheme in CLASS_NAMES:
         result = fit_classification_suite(
             train, test, scheme, "holdout", specs, cfg, backend, collect_details=True
@@ -1113,7 +1178,7 @@ def classification_experiments(
         for parts in holdout_parts
     ]
 
-    walk_metrics, walk_classes, walk_thresholds = [], [], []
+    walk_metrics, walk_train_metrics, walk_classes, walk_thresholds = [], [], [], []
     if cfg.run_walk_forward:
         development = model_frame.loc[: train.index.max()].copy()
         splitter = TimeSeriesSplit(n_splits=cfg.folds, gap=cfg.future_horizon)
@@ -1121,7 +1186,7 @@ def classification_experiments(
             fold_train = development.iloc[train_idx]
             validation = development.iloc[validation_idx]
             for scheme in CLASS_NAMES:
-                metrics, classes, _, _, thresholds = fit_classification_suite(
+                metrics, train_metrics, classes, _, _, thresholds = fit_classification_suite(
                     fold_train,
                     validation,
                     scheme,
@@ -1132,22 +1197,30 @@ def classification_experiments(
                     collect_details=False,
                 )
                 metrics["fold"] = fold
+                train_metrics["fold"] = fold
                 classes["fold"] = fold
                 thresholds["fold"] = fold
                 walk_metrics.append(metrics)
+                walk_train_metrics.append(train_metrics)
                 walk_classes.append(classes)
                 walk_thresholds.append(thresholds)
 
     return {
         "09_clasificacion_holdout.csv": holdout_outputs[0],
-        "10_clasificacion_por_clase_holdout.csv": holdout_outputs[1],
-        "10b_matrices_confusion_holdout.csv": holdout_outputs[2],
-        "11_importancia_features_holdout.csv": holdout_outputs[3],
+        "09c_clasificacion_train.csv": holdout_outputs[1],
+        "10_clasificacion_por_clase_holdout.csv": holdout_outputs[2],
+        "10b_matrices_confusion_holdout.csv": holdout_outputs[3],
+        "11_importancia_features_holdout.csv": holdout_outputs[4],
         "12_thresholds_regimen.csv": pd.concat(
-            [holdout_outputs[4]] + walk_thresholds, ignore_index=True
+            [holdout_outputs[5]] + walk_thresholds, ignore_index=True
         ),
         "09b_clasificacion_walk_forward.csv": (
             pd.concat(walk_metrics, ignore_index=True) if walk_metrics else pd.DataFrame()
+        ),
+        "09d_clasificacion_walk_forward_train.csv": (
+            pd.concat(walk_train_metrics, ignore_index=True)
+            if walk_train_metrics
+            else pd.DataFrame()
         ),
         "10c_clasificacion_por_clase_walk_forward.csv": (
             pd.concat(walk_classes, ignore_index=True) if walk_classes else pd.DataFrame()
@@ -1364,10 +1437,23 @@ def main() -> None:
     input_audit.to_csv(output_dir / "00_auditoria_datos.csv", index=False)
 
     exploratory = exploratory_analysis(core, discovery, cfg, output_dir)
-    regression_holdout = run_regression_holdout(model_frame, train, test, cfg)
-    regression_walk = run_regression_walk_forward(train, cfg)
+    regression_holdout_all = run_regression_holdout(model_frame, train, test, cfg)
+    regression_walk_all = run_regression_walk_forward(train, cfg)
+    regression_holdout = regression_holdout_all.query("split == 'holdout'").copy()
+    regression_train = regression_holdout_all.query("split == 'holdout_train'").copy()
+    if regression_walk_all.empty:
+        regression_walk = pd.DataFrame()
+        regression_walk_train = pd.DataFrame()
+    else:
+        train_mask = regression_walk_all["split"].str.endswith("_train")
+        regression_walk = regression_walk_all.loc[~train_mask].copy()
+        regression_walk_train = regression_walk_all.loc[train_mask].copy()
     regression_holdout.to_csv(output_dir / "07_regresion_holdout.csv", index=False)
+    regression_train.to_csv(output_dir / "07b_regresion_train.csv", index=False)
     regression_walk.to_csv(output_dir / "08_regresion_walk_forward.csv", index=False)
+    regression_walk_train.to_csv(
+        output_dir / "08b_regresion_walk_forward_train.csv", index=False
+    )
 
     backend = choose_backend(cfg)
     topology_columns = list(topology_features.columns)
