@@ -1,0 +1,25 @@
+{
+  "date": "2026-09-09",
+  "source_url": "https://colab.research.google.com/drive/1oQS_XZ57mKxqUtMb4JZSMWrQIvu24PNX",
+  "source_drive_modified_time": "2026-09-09T11:42:50.706Z",
+  "source_sha256": "2b041fbc2062d3263a6a05ff95b3db8cd43d5e7e8ce8407c25a14bf597c39c55",
+  "source_size_bytes": 661330,
+  "source_matches_drive_bytes": true,
+  "notebook_sha256": "6a910d39e279b80506b02b5500c5dd94b7a8fbe0a92daca785a7edb4ff2fa4c5",
+  "cells": 68,
+  "preserved_cells": 67,
+  "changed_cell_zero_based": 67,
+  "code_outputs_and_execution_counts_preserved": true,
+  "notebook_metadata_preserved": true,
+  "python_syntax_errors": [],
+  "training_executed": false,
+  "scope": "Documentation update only relative to the current Colab notebook. Earlier unpublished experimental cells are included relative to GitHub main.",
+  "external_artifacts": "Raw inputs, weights and remaining exports stay in the Drive paths documented in the notebook.",
+  "files": {
+    "FIN_DE_CICLO_DATOS_GAT.md": "db873f0a5237ed6f0be67237cdb37ba1837b60b7afe40df79f3d9cb252b62b25",
+    "GAT_crypto_contraste_experimental.ipynb": "6a910d39e279b80506b02b5500c5dd94b7a8fbe0a92daca785a7edb4ff2fa4c5",
+    "resultados/cierre_gat_resumenes/opcion_3_intensidad_resumen.csv": "6644ca7dec6f84bc52022b1fb0db87bf6436feaf38ee4b3b7a1c69c4a5fba14e",
+    "resultados/cierre_gat_resumenes/opcion_5_identificacion_resumen.csv": "7d3bf8348dc8fa634c73ec7c50c005ccb004693451e05181a0500d882950abf2",
+    "resultados/cierre_gat_resumenes/opcion_6_geometria_resumen.csv": "b58d0815209ab29e993bcb8352b565b8227a8efcc1940d7fdb510ae5a1b39d15"
+  }
+}
